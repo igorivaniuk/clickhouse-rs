@@ -58,6 +58,9 @@ pub enum ConnectionError {
     #[cfg(feature = "tls")]
     #[error("TLS connection error: `{}`", _0)]
     TlsError(#[source] native_tls::Error),
+
+    #[error("Connection broken")]
+    Broken,
 }
 
 /// This type enumerates connection URL errors.
@@ -66,10 +69,7 @@ pub enum UrlError {
     #[error("Invalid or incomplete connection URL")]
     Invalid,
 
-    #[error(
-        "Invalid value `{}' for connection URL parameter `{}'",
-        value, param
-    )]
+    #[error("Invalid value `{}' for connection URL parameter `{}'", value, param)]
     InvalidParamValue { param: String, value: String },
 
     #[error("URL parse error: {}", _0)]

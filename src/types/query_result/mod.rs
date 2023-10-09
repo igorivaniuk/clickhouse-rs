@@ -1,15 +1,14 @@
-use std::{marker::PhantomData, sync::Arc};
-use futures_util::stream::BoxStream;
 use futures_util::{
     future,
-    stream::{self, StreamExt},
+    stream::{self, BoxStream, StreamExt},
     TryStreamExt,
 };
 use log::info;
+use std::{marker::PhantomData, sync::Arc};
 
 use crate::{
-    try_opt,
     errors::Result,
+    try_opt,
     types::{
         block::BlockRef, query_result::stream_blocks::BlockStream, Block, Cmd, Complex, Query, Row,
         Rows, Simple,
@@ -91,9 +90,9 @@ impl<'a> QueryResult<'a> {
 
                 let context = c.context.clone();
 
-                let inner = c.inner.take().unwrap().call(Cmd::SendQuery(query, context));
+                let inner = c.get_inner()?.call(Cmd::SendQuery(query, context));
 
-                BlockStream::<'a>::new(c, inner, skip_first_block)
+                Ok(BlockStream::<'a>::new(c, inner, skip_first_block))
             })
     }
 
